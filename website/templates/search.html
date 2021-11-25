@@ -1,0 +1,100 @@
+{% extends "base.html" %} {% block title %}Search{% endblock %} {% block
+content %}
+{% if info == None %}
+<form method="POST">
+  <h3 align="center">Search engine</h3>
+  <div class="form-group">
+    <label for="entityType">Choose an entity type:</label>
+  </br>
+    <select class="form-select" name="entityType" id="entityType">
+      <option value="all" selected>All database</option>
+      <option value="bank">Bank</option>
+      <option value="university">University</option>
+      <option value="school">School</option>
+      <option value="library">Library</option>
+      <option value="central hospital">Central hospital</option>
+      <option value="provincial hospital">Provincial hospital</option>
+      <option value="local hospital">Local hospital</option>
+      <option value="market">Market</option>
+      <option value="online shop">Online shop</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input
+      type="text"
+      class="form-control"
+      id="name"
+      name="name"
+      placeholder="Enter name"
+    />
+  </div>
+  <div class="form-check" align="left">
+    <input class="form-check-input" type="checkbox" value="relative" name="relative" id="relative">
+    <label class="form-check-label" for="relative">
+        Relative search
+    </label>
+  </div>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </div>
+</form>
+{% elif info != [] %}
+  {% if eTypes[0] != eTypes[-1] %}
+    {% if relative %}
+      <h3 align="center">Your search result for an entity whose name contains "{{ name }}"</h3>
+    {% else %}
+      <h3 align="center">Your search result for an entity named "{{ name }}"</h3>
+    {% endif %}
+    <br/>
+  {% endif %}
+  {% for num, eType, header, rows in info %}
+    {% if eTypes[0] == eTypes[-1] %}
+      {% if relative %}
+        <h3 align="center">Your search result for a {{ eType }} whose name contains "{{ name }}"</h3>
+      {% else %}
+        <h3 align="center">Your search result for a {{ eType }} named "{{ name }}"</h3>
+      {% endif %}
+    {% else %}
+      <h3 align="left">{{ num }}. {{ eType }}</h3>
+    {% endif %}
+    <br/>
+    <table class="table">
+      <thead>
+        <tr>
+          {% for h in header %}
+          <th scope="col">{{ h }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for fr, row in rows %}
+        <tr>
+          <th scope="row">{{ fr }}</th>
+          {% for r in row %}
+          <td>{{ r }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    </br>
+  {% endfor %}
+  <div align="center">
+    <form action="/">
+      <button type="submit" class="btn btn-primary">Back</button>
+    </form>
+  </div>
+  </br>
+{% else %}
+  <h3 align="center">There are nothing you are looking for here.</h3>
+  <br/>
+  <div align="center">
+    <form action="/">
+      <button type="submit" class="btn btn-primary">Back</button>
+    </form>
+  </div>
+  </br>
+{% endif %}
+{% endblock %}

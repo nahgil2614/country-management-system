@@ -1,0 +1,46 @@
+{% extends "base.html" %} {% block title %}Register{% endblock %} {% block
+content %}
+<form method="POST">
+  {% if not current_user.eType %}
+  <h3 align="center">Register new entity</h3>
+  <div class="form-group">
+    <label for="entityType">Choose your entity type:</label>
+  </br>
+    <select class="form-select" name="entityType" id="entityType">
+      <option value="choose" selected>Choose one</option>
+      <option value="bank">Bank</option>
+      <option value="university">University</option>
+      <option value="school">School</option>
+      <option value="library">Library</option>
+      <option value="central hospital">Central hospital</option>
+      <option value="provincial hospital">Provincial hospital</option>
+      <option value="local hospital">Local hospital</option>
+      <option value="market">Market</option>
+      <option value="online shop">Online shop</option>
+    </select>
+  </div>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Next</button>
+  </div>
+  {% else %}
+  <h3 align="center">Register new {{ current_user.eType }}</h3>
+  {% for col in current_user.cols %}
+  <div class="form-group">
+    <label for={{col}}>{{col}}</label>
+    <input
+      type="text"
+      class="form-control"
+      id={{col}}
+      name={{col}}
+      placeholder={{col}}
+    />
+  </div>
+  {% endfor %}
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Register</button>
+  </div>
+  {% endif %}
+</form>
+{% endblock %}

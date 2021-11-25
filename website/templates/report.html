@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block title %}Report{% endblock %} {% block
+content %}
+<form method="POST">
+  {% if not eType %}
+  <h3 align="center">Report about an entity type</h3>
+  <div class="form-group">
+    <label for="entityType">Choose an entity type:</label>
+  </br>
+    <select class="form-select" name="entityType" id="entityType">
+      <option value="choose" selected>Choose one</option>
+      <option value="bank">Bank</option>
+      <option value="university">University</option>
+      <option value="school">School</option>
+      <option value="library">Library</option>
+      <option value="central hospital">Central hospital</option>
+      <option value="provincial hospital">Provincial hospital</option>
+      <option value="local hospital">Local hospital</option>
+      <option value="market">Market</option>
+      <option value="online shop">Online shop</option>
+    </select>
+  </div>
+  <div class="form-check" align="left">
+    <input class="form-check-input" type="checkbox" value="summarized" name="summarized" id="summarized">
+    <label class="form-check-label" for="summarized">
+        Summarized
+    </label>
+  </div>
+  <br/>
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Next</button>
+  </div>
+</form>
+  {% else %}
+  <h3 align="center">{{ type }} report of all '{{ eType }}'s</h3>
+  <br/>
+  <table class="table">
+    <thead>
+      <tr>
+        {% for h in header %}
+        <th scope="col">{{ h }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for fr, row in rows %}
+      <tr>
+        <th scope="row">{{ fr }}</th>
+        {% for r in row %}
+        <td>{{ r }}</td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </br>
+  <div align="center">
+    <form action="/">
+      <button type="submit" class="btn btn-primary">Back</button>
+    </form>
+  </div>
+  </br>
+  {% endif %}
+{% endblock %}
