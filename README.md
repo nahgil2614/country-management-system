@@ -1,7 +1,8 @@
 # country-management-system
 A simple web application to input, search for, and read reports about different entities in a country database in MySQL.
 
-## How to run the server
+## How to use
+Make sure that you've run `code.sql` in your MySQL. Then run the following command to start the server:
 ```
 python3 main.py
 ```
