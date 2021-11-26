@@ -3,38 +3,42 @@ from flask_login import login_required, current_user
 from . import db, cursor, dbmysql
 import json
 import random
+from . import user_info
 
 views = Blueprint('views', __name__)
 
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
+    try:
+        user_info[current_user.id]['eType'] = ''
+    except:
+        pass
     return render_template("home.html", user=current_user)
-
 
 @views.route('/register', methods=['GET', 'POST'])
 @login_required
 def register():
     if request.method == 'POST':
-        current_user.oldEType = current_user.eType
-        current_user.eType = request.form.get('entityType')
+        user_info[current_user.id]['oldEType'] = user_info[current_user.id]['eType']
+        user_info[current_user.id]['eType'] = request.form.get('entityType')
         form = request.form.to_dict(flat=True)
-        if current_user.eType:
-            if current_user.eType == 'choose':
+        if user_info[current_user.id]['eType']:
+            if user_info[current_user.id]['eType'] == 'choose':
                 flash('Please choose one entity type', category='error')
-                return render_template("register.html", user=current_user)
+                return render_template("register.html", user=current_user, eType=user_info[current_user.id]['eType'], cols=user_info[current_user.id]['cols'])
             else:
-                cursor.execute('show columns from ' + current_user.eType.replace(' ','_'))
-                current_user.to_insert = [col[0] for col in cursor.fetchall()]
-                current_user.cols = [col for col in current_user.to_insert if 'ID' not in col and col not in ['SBName', 'MOFName', 'MOEName', 'MOHName', 'MOTName']]
-                return render_template("register.html", user=current_user)
+                cursor.execute('show columns from ' + user_info[current_user.id]['eType'].replace(' ','_'))
+                user_info[current_user.id]['to_insert'] = [col[0] for col in cursor.fetchall()]
+                user_info[current_user.id]['cols'] = [col for col in user_info[current_user.id]['to_insert'] if 'ID' not in col and col not in ['SBName', 'MOFName', 'MOEName', 'MOHName', 'MOTName']]
+                return render_template("register.html", user=current_user, eType=user_info[current_user.id]['eType'], cols=user_info[current_user.id]['cols'])
         elif form:
             if any([v == '' for v in form.values()]):
                 flash('Please fill in all the requested information', category='error')
-                return render_template("register.html", user=current_user)
-            
+                return render_template("register.html", user=current_user, eType=user_info[current_user.id]['eType'], cols=user_info[current_user.id]['cols'])
+
             values = []
-            for col in current_user.to_insert:
+            for col in user_info[current_user.id]['to_insert']:
                 if col in form:
                     values.append(form[col])
                 elif 'ID' in col:
@@ -51,19 +55,25 @@ def register():
                     values.append('Trade')
 
             try:
-                cursor.execute('insert into ' + current_user.oldEType.replace(' ','_') + ' values ' + str(tuple(values)))
+                cursor.execute('insert into ' + user_info[current_user.id]['oldEType'].replace(' ','_') + ' values ' + str(tuple(values)))
             except: # referential integrity, type in text in numerical field, etc.
+                import traceback
+                traceback.print_exc()
                 flash('Oops! There are some errors. Please try again.', category='error')
                 return render_template("register.html", user=current_user)
             dbmysql.commit()
             flash('Registered successfully!', category='success')
             return redirect(url_for('views.home'))
 
-    return render_template("register.html", user=current_user)
+    return render_template("register.html", user=current_user, eType=user_info[current_user.id]['eType'], cols=user_info[current_user.id]['cols'])
 
 @views.route('/report', methods=['GET', 'POST'])
 @login_required
 def report():
+    try:
+        user_info[current_user.id]['eType'] = ''
+    except:
+        pass
     if request.method == 'POST':
         eType = request.form.get('entityType')
         summarized = request.form.getlist('summarized')
@@ -87,6 +97,10 @@ def report():
 
 @views.route('/search', methods=['GET', 'POST'])
 def search():
+    try:
+        user_info[current_user.id]['eType'] = ''
+    except:
+        pass
     if request.method == 'POST':
         eType = request.form.get('entityType')
         name = request.form.get('name')

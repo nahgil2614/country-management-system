@@ -12,6 +12,9 @@ cursor = dbmysql.cursor()
 db = SQLAlchemy()
 DB_NAME = "database.db" # database for User
 
+# users' info for the current server's session
+user_info = dict()
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'hjshjhdjah kjshkjdhjs'

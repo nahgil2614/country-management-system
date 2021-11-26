@@ -1,7 +1,7 @@
 {% extends "base.html" %} {% block title %}Register{% endblock %} {% block
 content %}
 <form method="POST">
-  {% if not current_user.eType %}
+  {% if not eType %}
   <h3 align="center">Register new entity</h3>
   <div class="form-group">
     <label for="entityType">Choose your entity type:</label>
@@ -24,8 +24,8 @@ content %}
     <button type="submit" class="btn btn-primary">Next</button>
   </div>
   {% else %}
-  <h3 align="center">Register new {{ current_user.eType }}</h3>
-  {% for col in current_user.cols %}
+  <h3 align="center">Register new {{ eType }}</h3>
+  {% for col in cols %}
   <div class="form-group">
     <label for={{col}}>{{col}}</label>
     <input
@@ -41,6 +41,7 @@ content %}
   <div align="center">
     <button type="submit" class="btn btn-primary">Register</button>
   </div>
+  <br />
   {% endif %}
 </form>
 {% endblock %}

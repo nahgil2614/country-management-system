@@ -3,7 +3,7 @@ from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db, cursor
 from flask_login import login_user, login_required, logout_user, current_user
-
+from . import user_info
 
 auth = Blueprint('auth', __name__)
 
@@ -18,7 +18,8 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
+                login_user(user, remember=False)
+                user_info[current_user.id] = {'to_insert' : [], 'eType' : '', 'oldEType' : '', 'cols' : []}
                 return redirect(url_for('views.home'))
             else:
                 flash('Incorrect password, try again.', category='error')
@@ -31,6 +32,10 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    try:
+        user_info.pop(current_user.id)
+    except:
+        pass
     logout_user()
     return redirect(url_for('auth.login'))
 
@@ -59,8 +64,10 @@ def sign_up():
                 password1, method='sha256'))
             db.session.add(new_user)
             db.session.commit()
-            login_user(new_user, remember=True)
+            login_user(new_user, remember=False)
             flash('Account created!', category='success')
+
+            user_info[current_user.id] = {'to_insert' : [], 'eType' : '', 'oldEType' : '', 'cols' : []}
             return redirect(url_for('views.home'))
 
     return render_template("sign_up.html", user=current_user)
